@@ -1,2 +1,0 @@
-# Pl
-Pl learning app
