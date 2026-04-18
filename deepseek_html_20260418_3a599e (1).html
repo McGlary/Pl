@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Polish Words · центр</title>
+  <style>
+    /* сброс и базовые стили */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f7fa;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      transition: background 0.3s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* основной контейнер — строго по центру */
+    #app {
+      width: 100%;
+      max-width: 560px;
+      margin: 16px;
+      padding: 24px 20px 28px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 32px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      transition: background 0.3s, color 0.2s, box-shadow 0.3s;
+    }
+
+    /* тёмная тема — адаптация контейнера */
+    body.dark-mode #app {
+      background: rgba(20, 20, 30, 0.9);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    body.dark-mode {
+      background: #0b0e14;
+    }
+
+    /* внутренние элементы */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    h1, h2 {
+      margin-top: 4px;
+      margin-bottom: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      word-break: break-word;
+    }
+
+    .card {
+      border: 1.5px solid #d0d7de;
+      background: #ffffffdd;
+      padding: 16px 18px;
+      margin: 12px 0;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+      width: 100%;
+      backdrop-filter: blur(4px);
+      font-size: 1.2rem;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    body.dark-mode .card {
+      background: #1f2530cc;
+      border-color: #3d4655;
+      color: #eee;
+    }
+
+    .card:hover {
+      background: #eef2ff;
+      border-color: #7c8db0;
+      transform: scale(1.01);
+    }
+
+    body.dark-mode .card:hover {
+      background: #2f3a4b;
+    }
+
+    button {
+      padding: 14px 24px;
+      border: none;
+      border-radius: 40px;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background: #e1e6f0;
+      color: #1e1e2a;
+      transition: 0.2s;
+      width: 100%;
+      max-width: 280px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    button:hover {
+      background: #cdd6e8;
+      transform: translateY(-1px);
+    }
+
+    body.dark-mode button {
+      background: #2d3648;
+      color: #f0f3fa;
+    }
+
+    body.dark-mode button:hover {
+      background: #3e4a60;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 40px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 1.1rem;
+      background: #fff;
+      margin: 12px 0 8px;
+      transition: border 0.2s, background 0.2s;
+    }
+
+    body.dark-mode input {
+      background: #1a212c;
+      border-color: #4a5668;
+      color: white;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #6c8cbf;
+    }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin: 24px 0 10px;
+      width: 100%;
+    }
+
+    .bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 12px;
+      background: #cbd5e1;
+      transition: background 0.2s;
+    }
+
+    body.dark-mode .bar {
+      background: #3f4a5c;
+    }
+
+    .result-message {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin: 10px 0 6px;
+    }
+
+    .translation-hint {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    /* для выравнивания в центре */
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .exit-btn {
+      margin-top: 20px;
+      background: #e9eef4;
+    }
+
+    body.dark-mode .exit-btn {
+      background: #2b3547;
+    }
+  </style>
+</head>
+<body id="mainBody">
+<div id="app">
+  <!-- Вёрстка полностью управляется через JS, но контейнер уже по центру -->
+</div>
+
+<script>
+  // ----- исходные данные -----
+  const lists = {
+    "basic.txt": [
+      { pl: "dom", ru: ["дом"] },
+      { pl: "kot", ru: ["кот","кошка"] },
+      { pl: "pies", ru: ["собака"] }
+    ]
+  };
+
+  const praises = ["Świetnie!","Brawo!","Super!","Dobrze!"];
+
+  let state = {
+    view: "menu",
+    list: null,
+    index: 0,
+    input: "",
+    result: null,
+    answers: [],
+    scores: {},
+    theme: "light"
+  };
+
+  // ---- helpers ----
+  function applyBodyTheme() {
+    const body = document.getElementById('mainBody');
+    if (state.theme === 'dark') {
+      body.classList.add('dark-mode');
+    } else {
+      body.classList.remove('dark-mode');
+    }
+  }
+
+  function render() {
+    applyBodyTheme();
+
+    const appDiv = document.getElementById('app');
+    // базовый внутренний контейнер с классом flex-col — всё по центру
+    const inner = (content) => `<div class="flex-col">${content}</div>`;
+
+    if (state.view === 'menu') {
+      const listHtml = Object.keys(lists).map(name => {
+        const scoreDisplay = state.scores[name] !== undefined ? state.scores[name] : '-';
+        return `
+          <div class="card" onclick="start('${name}')">
+            <span>${name}</span>
+            <span style="font-weight:600;">${scoreDisplay}</span>
+          </div>
+        `;
+      }).join('');
+
+      appDiv.innerHTML = inner(`
+        <h2>📋 Listy słów</h2>
+        ${listHtml}
+        <div class="menu-buttons">
+          <button onclick="state.view='settings';render()">⚙️ Ustawienia</button>
+        </div>
+      `);
+    }
+
+    else if (state.view === 'settings') {
+      appDiv.innerHTML = inner(`
+        <h2>⚙️ Ustawienia</h2>
+        <button onclick="toggleTheme()">🌓 Zmień motyw (${state.theme === 'light' ? 'ciemny' : 'jasny'})</button>
+        <button onclick="state.view='menu';render()" style="margin-top:16px;">← Wróć do menu</button>
+      `);
+    }
+
+    else if (state.view === 'learn') {
+      const words = lists[state.list];
+      const word = words[state.index];
+
+      // прогресс-бар
+      const progressBars = words.map((_, i) => {
+        let color = '#cbd5e1';
+        if (state.answers[i] === true) color = '#2b8c4a';
+        if (state.answers[i] === false) color = '#c13b3b';
+        return `<div class="bar" style="background:${color};"></div>`;
+      }).join('');
+
+      let mainContent = '';
+      if (!state.result) {
+        mainContent = `
+          <h1 style="margin-bottom:4px;">${word.pl}</h1>
+          <input id="inp" type="text" placeholder="Wpisz tłumaczenie" autocomplete="off" autofocus />
+          <button onclick="check()">✅ Sprawdź</button>
+          <div class="progress">${progressBars}</div>
+          <button class="exit-btn" onclick="exit()">🏠 Menu</button>
+        `;
+      } else {
+        const msg = state.result.ok ? state.result.msg : '❌ Błąd';
+        const translations = word.ru.join(', ');
+        mainContent = `
+          <h1 style="margin-bottom:4px;">${word.pl}</h1>
+          <div class="result-message">${msg}</div>
+          <div class="translation-hint">${translations}</div>
+          <button onclick="next()" style="margin-top:20px;">➡️ Dalej</button>
+          <div class="progress">${progressBars}</div>
+        `;
+      }
+
+      appDiv.innerHTML = inner(mainContent);
+
+      // фокус на инпут, если есть
+      if (!state.result) {
+        const inp = document.getElementById('inp');
+        if (inp) {
+          inp.focus();
+          // обработка Enter
+          inp.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              check();
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // ---- actions ----
+  function start(name) {
+    state.list = name;
+    state.index = 0;
+    state.answers = [];
+    state.result = null;
+    state.view = 'learn';
+    render();
+  }
+
+  function check() {
+    const inp = document.getElementById('inp');
+    if (!inp) return;
+    const val = inp.value.trim().toLowerCase();
+    if (val === '') return; // игнорируем пустой ввод
+
+    const word = lists[state.list][state.index];
+    const ok = word.ru.map(r => r.toLowerCase()).includes(val);
+
+    state.answers.push(ok);
+
+    if (ok) {
+      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+      state.result = { ok: true, msg: randomPraise };
+    } else {
+      state.result = { ok: false };
+    }
+    render();
+  }
+
+  function next() {
+    const words = lists[state.list];
+
+    // конец списка?
+    if (state.index + 1 >= words.length) {
+      const correct = state.answers.filter(a => a === true).length;
+      const score = ((correct / words.length) * 5).toFixed(1);
+      state.scores[state.list] = score;
+      state.view = 'menu';
+      render();
+      return;
+    }
+
+    state.index++;
+    state.result = null;
+    render();
+  }
+
+  function exit() {
+    if (confirm('Czy zakończyć? Wynik nie zostanie zapisany')) {
+      state.index = 0;
+      state.answers = [];
+      state.result = null;
+      state.view = 'menu';
+      render();
+    }
+  }
+
+  function toggleTheme() {
+    state.theme = state.theme === 'light' ? 'dark' : 'light';
+    render();
+  }
+
+  // глобальные ссылки для onclick в HTML
+  window.start = start;
+  window.check = check;
+  window.next = next;
+  window.exit = exit;
+  window.toggleTheme = toggleTheme;
+
+  // инициализация
+  render();
+</script>
+</body>
+</html>
